@@ -27,6 +27,60 @@ This repository contains the database schema and migration scripts for the Servi
 
 ```mermaid
 erDiagram
+    permission {
+        BIGINT id PK
+        UUID uid UK
+        VARCHAR resource UK "part of unique key"
+        VARCHAR action UK "part of unique key"
+        TEXT description
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    "group" {
+        BIGINT id PK
+        UUID uid UK
+        VARCHAR name UK
+        TEXT description
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    group_permission {
+        BIGINT group_id PK, FK
+        BIGINT permission_id PK, FK
+        TIMESTAMPTZ created_at
+    }
+
+    role {
+        BIGINT id PK
+        UUID uid UK
+        BIGINT group_id FK
+        VARCHAR name UK "part of unique key"
+        TEXT description
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    role_permission {
+        BIGINT role_id PK, FK
+        BIGINT permission_id PK, FK
+        TIMESTAMPTZ created_at
+    }
+
+    subject_role {
+        VARCHAR subject_id PK
+        VARCHAR subject_type PK
+        BIGINT role_id PK, FK
+        TIMESTAMPTZ assigned_at
+    }
+
+    "group" ||--o{ group_permission : "has"
+    permission ||--o{ group_permission : "assigned_to"
+    "group" ||--o{ role : "defines"
+    role ||--o{ role_permission : "has"
+    permission ||--o{ role_permission : "assigned_to"
+    role ||--o{ subject_role : "assigned_to_subject"
 ```
 
 ## Migration Structure
@@ -61,26 +115,31 @@ make update
 ## Migration Files
 
 ### Permission Migration (001)
+
 - **File**: `001-create-permission-table.sql`
 - **Purpose**: Create permission table with resource-action pairs
 - **Constraints**: Unique resource-action combination, UUID public ID
 
 ### Group Management Migration (002)
+
 - **File**: `002-create-group-tables.sql`
 - **Purpose**: Create group and group_permission tables
 - **Constraints**: Unique group names, cascade deletes on relationships
 
 ### Role Management Migration (003)
+
 - **File**: `003-create-role-tables.sql`
 - **Purpose**: Create role and role_permission tables
 - **Constraints**: Unique role names within groups, cascade deletes
 
 ### Subject Assignment Migration (004)
+
 - **File**: `004-create-subject-role.sql`
 - **Purpose**: Create subject_role assignment table
 - **Constraints**: Composite primary key, cascade deletes
 
 ## Master Changelog
+
 - **File**: `master-changelog.xml`
 - **Purpose**: Include all migration files in execution order
 - **Order**: 001 → 002 → 003 → 004 (business logic progression)
@@ -88,21 +147,25 @@ make update
 ## Usage
 
 ### Apply All Migrations
+
 ```bash
 liquibase --changeLogFile=master-changelog.xml update
 ```
 
 ### Validate Migrations
+
 ```bash
 liquibase --changeLogFile=master-changelog.xml validate
 ```
 
 ### Rollback Last Migration
+
 ```bash
 liquibase --changeLogFile=master-changelog.xml rollbackCount 1
 ```
 
 ### Rollback to Specific Version
+
 ```bash
 liquibase --changeLogFile=master-changelog.xml rollback 20250213-001
 ```
@@ -110,7 +173,9 @@ liquibase --changeLogFile=master-changelog.xml rollback 20250213-001
 ## Configuration
 
 ### Database Connection
+
 Update `liquibase.properties` with your database connection details:
+
 ```properties
 url=jdbc:postgresql://localhost:5432/service_access
 username=your_username
@@ -119,6 +184,7 @@ driver=org.postgresql.Driver
 ```
 
 ### Liquibase Properties
+
 ```properties
 changeLogFile=master-changelog.xml
 url=jdbc:postgresql://localhost:5432/service_access
@@ -132,16 +198,19 @@ contexts=dev,test,prod
 ## Testing
 
 ### Migration Validation
+
 ```bash
 liquibase --changeLogFile=master-changelog.xml validate
 ```
 
 ### Data Integrity Tests
+
 - Test foreign key constraints
 - Verify cascade delete behavior
 - Validate unique constraints
 
 ### Performance Tests
+
 - Test index effectiveness
 - Validate query performance
 - Monitor execution plans
@@ -149,12 +218,15 @@ liquibase --changeLogFile=master-changelog.xml validate
 ## Rollback Strategy
 
 ### Automatic Rollback
+
 Each migration includes rollback statements that:
+
 - Drop tables in reverse dependency order
 - Preserve data integrity through CASCADE constraints
 - Maintain referential integrity
 
 ### Manual Rollback
+
 ```bash
 # Rollback all migrations
 liquibase --changeLogFile=master-changelog.xml rollbackToDate 2026-02-13
@@ -169,12 +241,14 @@ liquibase --changeLogFile=master-changelog.xml rollbackCount 2
 ## Success Criteria
 
 ### Functional Requirements
+
 - All tables created with proper constraints
 - Foreign key relationships established
 - Indexes created for performance optimization
 - Business rules enforced through constraints
 
 ### Non-Functional Requirements
+
 - Migration execution time < 5 minutes
 - Data integrity maintained throughout
 - Performance requirements met
@@ -183,11 +257,13 @@ liquibase --changeLogFile=master-changelog.xml rollbackCount 2
 ## Risks and Mitigations
 
 ### Risks
+
 - Migration complexity with cascade deletes
 - Performance impact during migration execution
 - Data integrity during migration process
 
 ### Mitigations
+
 - Comprehensive testing strategy
 - Performance benchmarking
 - Rollback capability
