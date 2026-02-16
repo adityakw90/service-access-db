@@ -13,12 +13,14 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     primaryKey: true
+                    primaryKeyName: pk_permission
               - column:
                   name: uid
                   type: UUID
                   constraints:
                     nullable: false
                     unique: true
+                    uniqueConstraintName: uq_permission_uid
               - column:
                   name: resource
                   type: VARCHAR(255)
@@ -45,14 +47,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - createIndex:
-            indexName: idx_permission_resource_action
-            tableName: permission
-            columns:
-              - column:
-                  name: resource
-              - column:
-                  name: action
-        - createIndex:
             indexName: idx_permission_uid
             tableName: permission
             columns:
@@ -62,3 +56,11 @@ databaseChangeLog:
             constraintName: uq_permission_resource_action
             tableName: permission
             columnNames: resource, action
+        - createIndex:
+            indexName: idx_permission_resource_action
+            tableName: permission
+            columns:
+              - column:
+                  name: resource
+              - column:
+                  name: action

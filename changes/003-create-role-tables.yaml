@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 003-create-role-tables
+      id: 003-1-create-role-tables
       author: adit
       changes:
         - createTable:
@@ -13,19 +13,22 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     primaryKey: true
+                    primaryKeyName: pk_role
               - column:
                   name: uid
                   type: UUID
                   constraints:
                     nullable: false
                     unique: true
+                    uniqueConstraintName: uq_role_uid
               - column:
                   name: group_id
                   type: BIGINT
                   constraints:
                     nullable: false
                     foreignKeyName: fk_role_group
-                    references: group(id)
+                    referencedTableName: group
+                    referencedColumnNames: id
                     onDelete: CASCADE
               - column:
                   name: name
@@ -47,6 +50,21 @@ databaseChangeLog:
                   defaultValueDate: NOW()
                   constraints:
                     nullable: false
+        - addUniqueConstraint:
+            constraintName: uq_role_group_name
+            tableName: role
+            columnNames: group_id, name
+        - createIndex:
+            indexName: idx_role_uid
+            tableName: role
+            columns:
+              - column:
+                  name: uid
+
+  - changeSet:
+      id: 003-2-create-role-permission-tables
+      author: adit
+      changes:
         - createTable:
             tableName: role_permission
             columns:
@@ -56,7 +74,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_role_permission_role
-                    references: role(id)
+                    referencedTableName: role
+                    referencedColumnNames: id
                     onDelete: CASCADE
               - column:
                   name: permission_id
@@ -64,7 +83,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_role_permission_permission
-                    references: permission(id)
+                    referencedTableName: permission
+                    referencedColumnNames: id
                     onDelete: CASCADE
               - column:
                   name: created_at
@@ -88,13 +108,3 @@ databaseChangeLog:
             columns:
               - column:
                   name: permission_id
-        - createIndex:
-            indexName: idx_role_uid
-            tableName: role
-            columns:
-              - column:
-                  name: uid
-        - addUniqueConstraint:
-            constraintName: uq_role_group_name
-            tableName: role
-            columnNames: group_id, name

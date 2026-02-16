@@ -18,6 +18,4 @@ docs/
 
 # IDE
 /.claude
-
-# test file
-/check.sh
+/docs

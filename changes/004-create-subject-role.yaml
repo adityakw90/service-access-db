@@ -22,7 +22,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_subject_role_role
-                    references: role(id)
+                    referencedTableName: role
+                    referencedColumnNames: id
                     onDelete: CASCADE
               - column:
                   name: assigned_at

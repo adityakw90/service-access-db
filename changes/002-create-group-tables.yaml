@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 002-create-group-tables
+      id: 002-1-create-group-tables
       author: adit
       changes:
         - createTable:
@@ -13,17 +13,21 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     primaryKey: true
+                    primaryKeyName: pk_group
               - column:
                   name: uid
                   type: UUID
                   constraints:
                     nullable: false
                     unique: true
+                    uniqueConstraintName: uq_group_uid
               - column:
                   name: name
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_group_name
               - column:
                   name: description
                   type: TEXT
@@ -39,16 +43,43 @@ databaseChangeLog:
                   defaultValueDate: NOW()
                   constraints:
                     nullable: false
+        - createIndex:
+            indexName: idx_group_uid
+            tableName: group
+            columns:
+              - column:
+                  name: uid
+
+  - changeSet:
+      id: 002-2-create-group-permission-tables
+      author: adit
+      changes:
         - createTable:
             tableName: group_permission
             columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_group_permission
+              - column:
+                  name: uid
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_group_permission_uid
               - column:
                   name: group_id
                   type: BIGINT
                   constraints:
                     nullable: false
                     foreignKeyName: fk_group_permission_group
-                    references: group(id)
+                    referencedTableName: group
+                    referencedColumnNames: id
                     onDelete: CASCADE
               - column:
                   name: permission_id
@@ -56,7 +87,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_group_permission_permission
-                    references: permission(id)
+                    referencedTableName: permission
+                    referencedColumnNames: id
                     onDelete: CASCADE
               - column:
                   name: created_at
@@ -64,10 +96,24 @@ databaseChangeLog:
                   defaultValueDate: NOW()
                   constraints:
                     nullable: false
-        - addPrimaryKey:
+        - createIndex:
+            indexName: idx_group_permission_uid
+            tableName: group_permission
+            columns:
+              - column:
+                  name: uid
+        - addUniqueConstraint:
+            constraintName: uq_group_permission_group_permission
             tableName: group_permission
             columnNames: group_id, permission_id
-            constraintName: pk_group_permission
+        - createIndex:
+            indexName: idx_group_permission
+            tableName: group_permission
+            columns:
+              - column:
+                  name: group_id
+              - column:
+                  name: permission_id
         - createIndex:
             indexName: idx_group_permission_group
             tableName: group_permission
@@ -80,13 +126,3 @@ databaseChangeLog:
             columns:
               - column:
                   name: permission_id
-        - createIndex:
-            indexName: idx_group_uid
-            tableName: group
-            columns:
-              - column:
-                  name: uid
-        - addUniqueConstraint:
-            constraintName: uq_group_name
-            tableName: group
-            columnNames: name
