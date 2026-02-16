@@ -24,7 +24,7 @@ databaseChangeLog:
                     foreignKeyName: fk_subject_role_role
                     referencedTableName: role
                     referencedColumnNames: id
-                    onDelete: CASCADE
+                    deleteCascade: true
               - column:
                   name: assigned_at
                   type: TIMESTAMPTZ

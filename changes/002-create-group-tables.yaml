@@ -80,7 +80,7 @@ databaseChangeLog:
                     foreignKeyName: fk_group_permission_group
                     referencedTableName: group
                     referencedColumnNames: id
-                    onDelete: CASCADE
+                    deleteCascade: true
               - column:
                   name: permission_id
                   type: BIGINT
@@ -89,7 +89,7 @@ databaseChangeLog:
                     foreignKeyName: fk_group_permission_permission
                     referencedTableName: permission
                     referencedColumnNames: id
-                    onDelete: CASCADE
+                    deleteCascade: true
               - column:
                   name: created_at
                   type: TIMESTAMPTZ
