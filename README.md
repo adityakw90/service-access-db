@@ -145,7 +145,7 @@ make update
 
 ## Master Changelog
 
-- **File**: `master-changelog.xml`
+- **File**: `master.yml`
 - **Purpose**: Include all migration files in execution order
 - **Order**: 001 → 002 → 003 → 004 (business logic progression)
 
@@ -154,25 +154,25 @@ make update
 ### Apply All Migrations
 
 ```bash
-liquibase --changeLogFile=master-changelog.xml update
+liquibase --changeLogFile=master.yml update
 ```
 
 ### Validate Migrations
 
 ```bash
-liquibase --changeLogFile=master-changelog.xml validate
+liquibase --changeLogFile=master.yml validate
 ```
 
 ### Rollback Last Migration
 
 ```bash
-liquibase --changeLogFile=master-changelog.xml rollbackCount 1
+liquibase --changeLogFile=master.yml rollbackCount 1
 ```
 
 ### Rollback to Specific Version
 
 ```bash
-liquibase --changeLogFile=master-changelog.xml rollback 20250213-001
+liquibase --changeLogFile=master.yml rollback 20250213-001
 ```
 
 ## Configuration
@@ -191,7 +191,7 @@ driver=org.postgresql.Driver
 ### Liquibase Properties
 
 ```properties
-changeLogFile=master-changelog.xml
+changeLogFile=master.yml
 url=jdbc:postgresql://localhost:5432/service_access
 driver=org.postgresql.Driver
 username=service_access
@@ -205,7 +205,7 @@ contexts=dev,test,prod
 ### Migration Validation
 
 ```bash
-liquibase --changeLogFile=master-changelog.xml validate
+liquibase --changeLogFile=master.yml validate
 ```
 
 ### Data Integrity Tests
@@ -234,13 +234,13 @@ Each migration includes rollback statements that:
 
 ```bash
 # Rollback all migrations
-liquibase --changeLogFile=master-changelog.xml rollbackToDate 2026-02-13
+liquibase --changeLogFile=master.yml rollbackToDate 2026-02-13
 
 # Rollback to specific version
-liquibase --changeLogFile=master-changelog.xml rollback 20250213-001
+liquibase --changeLogFile=master.yml rollback 20250213-001
 
 # Rollback specific number of changes
-liquibase --changeLogFile=master-changelog.xml rollbackCount 2
+liquibase --changeLogFile=master.yml rollbackCount 2
 ```
 
 ## Success Criteria
