@@ -47,8 +47,10 @@ erDiagram
     }
 
     group_permission {
-        BIGINT group_id PK, FK
-        BIGINT permission_id PK, FK
+        BIGINT id PK
+        UUID uid UK
+        BIGINT group_id FK
+        BIGINT permission_id FK
         TIMESTAMPTZ created_at
     }
 
@@ -64,7 +66,7 @@ erDiagram
 
     role_permission {
         BIGINT role_id PK, FK
-        BIGINT permission_id PK, FK
+        BIGINT group_permission_id PK, FK
         TIMESTAMPTZ created_at
     }
 
@@ -79,7 +81,7 @@ erDiagram
     permission ||--o{ group_permission : "assigned_to"
     "group" ||--o{ role : "defines"
     role ||--o{ role_permission : "has"
-    permission ||--o{ role_permission : "assigned_to"
+    group_permission ||--o{ role_permission : "assigned_to"
     role ||--o{ subject_role : "assigned_to_subject"
 ```
 
@@ -88,9 +90,12 @@ erDiagram
 The migrations are managed via **Liquibase** and are located in the `changes/` directory.
 The execution order is defined in `master.yml`.
 
-| File                               | Description                                       | ID Prefix |
-| :--------------------------------- | :------------------------------------------------ | :-------- |
-| `001-create-permission-tables.yml` | Creates `permission` and `permission_pin` tables. | `001-XX`  |
+| File                               | Description                                    | ID Prefix |
+| :--------------------------------- | :--------------------------------------------- | :-------- |
+| `001-create-permission-tables.yml` | Creates `permission` table.                    | `001-XX`  |
+| `002-create-group-tables.yml`      | Creates `group` and `group_permission` tables. | `002-XX`  |
+| `003-create-role-tables.yml`       | Creates `role` and `role_permission` tables.   | `003-XX`  |
+| `004-create-subject-role.yml`      | Creates `subject_role` table.                  | `004-XX`  |
 
 ## Environment Variables
 
@@ -116,27 +121,27 @@ make update
 
 ### Permission Migration (001)
 
-- **File**: `001-create-permission-table.sql`
+- **File**: `001-create-permission-table.yaml`
 - **Purpose**: Create permission table with resource-action pairs
 - **Constraints**: Unique resource-action combination, UUID public ID
 
 ### Group Management Migration (002)
 
-- **File**: `002-create-group-tables.sql`
+- **File**: `002-create-group-tables.yaml`
 - **Purpose**: Create group and group_permission tables
-- **Constraints**: Unique group names, cascade deletes on relationships
+- **Constraints**: Unique group names, cascade deletes on relationships, group_permission has own ID
 
 ### Role Management Migration (003)
 
-- **File**: `003-create-role-tables.sql`
+- **File**: `003-create-role-tables.yaml`
 - **Purpose**: Create role and role_permission tables
-- **Constraints**: Unique role names within groups, cascade deletes
+- **Constraints**: Unique role names within groups, cascade deletes, role_permission links role to group_permission
 
 ### Subject Assignment Migration (004)
 
-- **File**: `004-create-subject-role.sql`
+- **File**: `004-create-subject-role.yaml`
 - **Purpose**: Create subject_role assignment table
-- **Constraints**: Composite primary key, cascade deletes
+- **Constraints**: Composite primary key (subject_id, subject_type, role_id), cascade deletes
 
 ## Master Changelog
 
