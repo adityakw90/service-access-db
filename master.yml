@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-create-permission-table.yaml
+  - include:
+      file: changes/002-create-group-tables.yaml
+  - include:
+      file: changes/003-create-role-tables.yaml
+  - include:
+      file: changes/004-create-subject-role.yaml

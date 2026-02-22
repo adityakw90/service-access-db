@@ -1,0 +1,110 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-1-create-role-tables
+      author: adit
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_role
+              - column:
+                  name: uid
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_role_uid
+              - column:
+                  name: group_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_group
+                    referencedTableName: group
+                    referencedColumnNames: id
+                    deleteCascade: true
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueDate: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueDate: NOW()
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: uq_role_group_name
+            tableName: role
+            columnNames: group_id, name
+        - createIndex:
+            indexName: idx_role_uid
+            tableName: role
+            columns:
+              - column:
+                  name: uid
+
+  - changeSet:
+      id: 003-2-create-role-permission-tables
+      author: adit
+      changes:
+        - createTable:
+            tableName: role_permission
+            columns:
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_permission_role
+                    referencedTableName: role
+                    referencedColumnNames: id
+                    deleteCascade: true
+              - column:
+                  name: group_permission_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_role_permission_group_permission
+                    referencedTableName: group_permission
+                    referencedColumnNames: id
+                    deleteCascade: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueDate: NOW()
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: role_permission
+            columnNames: role_id, group_permission_id
+            constraintName: pk_role_permission
+        - createIndex:
+            indexName: idx_role_permission_role
+            tableName: role_permission
+            columns:
+              - column:
+                  name: role_id
+        - createIndex:
+            indexName: idx_role_permission_group_permission
+            tableName: role_permission
+            columns:
+              - column:
+                  name: group_permission_id

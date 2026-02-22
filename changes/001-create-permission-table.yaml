@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-permission-table
+      author: adit
+      changes:
+        - createTable:
+            tableName: permission
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_permission
+              - column:
+                  name: uid
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_permission_uid
+              - column:
+                  name: resource
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: action
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueDate: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueDate: NOW()
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_permission_uid
+            tableName: permission
+            columns:
+              - column:
+                  name: uid
+        - addUniqueConstraint:
+            constraintName: uq_permission_resource_action
+            tableName: permission
+            columnNames: resource, action
+        - createIndex:
+            indexName: idx_permission_resource_action
+            tableName: permission
+            columns:
+              - column:
+                  name: resource
+              - column:
+                  name: action
