@@ -15,6 +15,7 @@ get-env-value = $(shell grep '^$(1)=' $(ENV_FILE) | cut -d'=' -f2-)
 # Base Docker command pattern
 # Read environment variables from env file and pass them directly to Liquibase
 DOCKER_RUN = docker run --rm \
+	--network host \
 	-v $(PWD):$(LIQUIBASE_DIR) \
 	-w $(LIQUIBASE_DIR) \
 	$(LIQUIBASE_IMAGE) \
