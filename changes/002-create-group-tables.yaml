@@ -31,6 +31,8 @@ databaseChangeLog:
               - column:
                   name: description
                   type: TEXT
+                  constraints:
+                    nullable: false
               - column:
                   name: created_at
                   type: TIMESTAMPTZ
